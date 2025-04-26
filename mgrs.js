@@ -122,6 +122,43 @@ export function inverse(mgrs) {
   return [bbox.left, bbox.bottom, bbox.right, bbox.top];
 }
 
+/**
+ * Convert MGRS to lat/lon polygon.
+ *  
+ * * @param {string} mgrs MGRS string.
+ * * @return {[number,number][]} An array of arrays with longitude and latitude
+ * *    values in WGS84, representing the corners of the polygon for the
+ * *    provided MGRS reference.
+ * */
+
+
+export function polygon(mgrsString) {
+  // 1. Convert MGRS to UTM
+
+
+  // 2. Get UTM zone and easting/northing
+  const utm = decode(mgrsString.toUpperCase());
+
+  // 3. Calculate bounding corners using true UTM math
+  const eastingMin = Math.floor(utm.easting / 10000) * 10000;
+  const northingMin = Math.floor(utm.northing / 10000) * 10000;
+  const eastingMax = eastingMin + 10000;
+  const northingMax = northingMin + 10000;
+
+  const bottomLeft = UTMtoLL({ easting: eastingMin, northing: northingMin, zoneNumber: utm.zoneNumber, zoneLetter: utm.zoneLetter });
+  const bottomRight = UTMtoLL({ easting: eastingMax, northing: northingMin, zoneNumber: utm.zoneNumber, zoneLetter: utm.zoneLetter });
+  const topRight = UTMtoLL({ easting: eastingMax, northing: northingMax, zoneNumber: utm.zoneNumber, zoneLetter: utm.zoneLetter });
+  const topLeft = UTMtoLL({ easting: eastingMin, northing: northingMax, zoneNumber: utm.zoneNumber, zoneLetter: utm.zoneLetter });
+
+  return [
+      [bottomLeft.lon, bottomLeft.lat],
+      [bottomRight.lon, bottomRight.lat],
+      [topRight.lon, topRight.lat],
+      [topLeft.lon, topLeft.lat],
+      [bottomLeft.lon, bottomLeft.lat] // Close the polygon
+  ];
+}
+
 export function toPoint(mgrs) {
   if (mgrs === '') {
     throw new TypeError('toPoint received a blank string');

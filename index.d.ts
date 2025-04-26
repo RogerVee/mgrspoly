@@ -29,4 +29,16 @@ declare module "mgrs" {
      *    WGS84, representing the center point of the provided MGRS reference.
      */
     export function toPoint(mgrs: string): [number,number];
+
+    //esport polygon(mgrs: string): [number,number][];
+    /**
+     * Convert MGRS to lat/lon polygon.
+     * 
+     * @param {string} mgrs MGRS string.
+     * @return {[number,number][]} An array of arrays with longitude and latitude
+     *    values in WGS84, representing the corners of the polygon for the
+     *    provided MGRS reference.
+     */
+    export function polygon(mgrs: string): [number,number][];
+    
 }
